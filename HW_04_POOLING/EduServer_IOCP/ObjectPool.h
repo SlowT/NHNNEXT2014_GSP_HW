@@ -6,13 +6,14 @@
 
 
 template <class TOBJECT, int ALLOC_COUNT = 100>
-class ObjectPool
+class ObjectPool : public ClassTypeLock<ObjectPool<TOBJECT>>
 {
 public:
 
 	static void* operator new(size_t objSize)
 	{
 		//TODO: TOBJECT 타입 단위로 lock 잠금
+		LockGuard locked;
 
 		if (!mFreeList)
 		{
@@ -28,6 +29,7 @@ public:
 				*ppCurr = pNext;
 				ppCurr = reinterpret_cast<uint8_t**>(pNext);
 			}
+			*ppCurr = 0;
 
 			mTotalAllocCount += ALLOC_COUNT;
 		}
@@ -42,6 +44,7 @@ public:
 	static void	operator delete(void* obj)
 	{
 		//TODO: TOBJECT 타입 단위로 lock 잠금
+		LockGuard locked;
 
 		CRASH_ASSERT(mCurrentUseCount > 0);
 

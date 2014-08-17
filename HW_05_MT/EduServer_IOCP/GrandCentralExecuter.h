@@ -20,7 +20,7 @@ public:
 		if (InterlockedIncrement64(&mRemainTaskCount) > 1)
 		{
 			//TODO: 이미 누군가 작업중이면 어떻게?
-			
+			mCentralTaskQueue.push( task );
 		}
 		else
 		{
@@ -34,8 +34,11 @@ public:
 				if (mCentralTaskQueue.try_pop(task))
 				{
 					//TODO: task를 수행하고 mRemainTaskCount를 하나 감소 
+					task();
+
 					// mRemainTaskCount가 0이면 break;
-					
+					if( InterlockedDecrement64(&mRemainTaskCount) == 0 )
+						break;
 				}
 			}
 		}
@@ -60,7 +63,8 @@ void GCEDispatch(T instance, F memfunc, Args&&... args)
 	static_assert(true == is_shared_ptr<T>::value, "T should be shared_ptr");
 
 	//TODO: intance의 memfunc를 std::bind로 묶어서 전달
-	
+	auto bind = std::bind( memfunc, instance, args... );
 
 	//GGrandCentralExecuter->DoDispatch(bind);
+	GGrandCentralExecuter->DoDispatch( bind );
 }

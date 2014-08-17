@@ -17,6 +17,9 @@ void Timer::PushTimerJob(SyncExecutablePtr owner, const TimerTask& task, uint32_
 	CRASH_ASSERT(LThreadType == THREAD_IO_WORKER);
 
 	//TODO: mTimerJobQueue¿¡ TimerJobElement¸¦ push..
+	LTickCount = GetTickCount64();
+	TimerJobElement tmp( owner, task, LTickCount + after );
+	mTimerJobQueue.push( tmp );
 	
 }
 

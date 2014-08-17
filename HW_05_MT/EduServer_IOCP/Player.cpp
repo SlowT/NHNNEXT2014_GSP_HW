@@ -32,7 +32,7 @@ void Player::Start(int heartbeat)
 	mIsAlive = true;
 	mHeartBeat = heartbeat;
 	
-	/// ID 발급 및 플레잉어 맵에 등록
+	/// ID 발급 및 플레이어 맵에 등록
 	mPlayerId = GPlayerManager->RegisterPlayer(GetSharedFromThis<Player>());
 
 	/// 생명 불어넣기 ㄱㄱ
@@ -59,8 +59,8 @@ void Player::OnTick()
 
 
 	//TODO: AllPlayerBuffDecay::CheckBuffTimeout를 GrandCentralExecuter를 통해 실행
-
-	
+	auto timeoutEvent = std::make_shared<AllPlayerBuffDecay>();
+	GCEDispatch( timeoutEvent, &AllPlayerBuffDecay::CheckBuffTimeout );
 	
 	if (mHeartBeat > 0)
 		DoSyncAfter(mHeartBeat, GetSharedFromThis<Player>(), &Player::OnTick);

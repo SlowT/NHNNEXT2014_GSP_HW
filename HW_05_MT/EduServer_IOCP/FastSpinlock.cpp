@@ -65,16 +65,19 @@ void FastSpinlock::EnterReadLock()
 			//return;
 		// else
 			// mLockFlag 원복
-
-
-		
+		if( InterlockedIncrement( &mLockFlag ) < LF_WRITE_MASK )
+			return;
+		else{
+			InterlockedDecrement( &mLockFlag );
+			YieldProcessor();
+		}
 	}
 }
 
 void FastSpinlock::LeaveReadLock()
 {
 	//TODO: mLockFlag 처리 
-	
+	InterlockedDecrement( &mLockFlag );
 
 	if (mLockOrder != LO_DONT_CARE)
 		LLockOrderChecker->Pop(this);

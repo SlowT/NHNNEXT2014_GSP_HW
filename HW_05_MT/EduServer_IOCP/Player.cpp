@@ -42,7 +42,7 @@ void Player::Start(int heartbeat)
 
 void Player::OnTick()
 {
-	if (!IsAlive())
+	if (!IsAlive() || !mSession->IsConnected())
 		return;
 
 	

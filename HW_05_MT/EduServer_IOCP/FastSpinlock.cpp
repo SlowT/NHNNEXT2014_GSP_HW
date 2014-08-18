@@ -63,14 +63,24 @@ void FastSpinlock::EnterReadLock()
 		//TODO: Readlock 진입 구현 (mLockFlag를 어떻게 처리하면 되는지?)
 		// if ( readlock을 얻으면 )
 			//return;
+
+		if ((InterlockedIncrement(&mLockFlag) & LF_WRITE_MASK) == 0)
+			return;
+
+		InterlockedDecrement(&mLockFlag);
+
 		// else
 			// mLockFlag 원복
+
+		/* 이것도 됨.
 		if( InterlockedIncrement( &mLockFlag ) < LF_WRITE_MASK )
 			return;
 		else{
 			InterlockedDecrement( &mLockFlag );
 			YieldProcessor();
 		}
+		*/
+
 	}
 }
 

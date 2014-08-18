@@ -64,6 +64,8 @@ void GCEDispatch(T instance, F memfunc, Args&&... args)
 
 	//TODO: intance의 memfunc를 std::bind로 묶어서 전달
 	auto bind = std::bind( memfunc, instance, args... );
+	///# 	auto bind = std::bind(memfunc, instance, std::forward<Args>(args)...);
+
 
 	//GGrandCentralExecuter->DoDispatch(bind);
 	GGrandCentralExecuter->DoDispatch( bind );

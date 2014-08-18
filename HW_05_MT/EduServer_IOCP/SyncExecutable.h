@@ -21,7 +21,7 @@ public:
 		FastSpinlockGuard writeLocked(mLock, true);
 
 		///# 이렇게 해야 비용이 적다 
-		// return (static_cast<T*>(this)->*memfunc)(args...);
+		return (static_cast<T*>(this)->*memfunc)(args...);
 
 		//auto f = std::bind( memfunc, static_cast<T*>(this), args... );
 		//return f();

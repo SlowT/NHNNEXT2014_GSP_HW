@@ -3,7 +3,7 @@
 #include "Exception.h"
 #include "SyncExecutable.h"
 #include "Timer.h"
-
+#include "GrandCentralExecuter.h"
 
 
 Timer::Timer()
@@ -41,11 +41,13 @@ void Timer::DoTimerJob()
 		if (LTickCount < timerJobElem.mExecutionTick)
 			break;
 
-		timerJobElem.mOwner->EnterLock();
-		
-		timerJobElem.mTask();
+// 		timerJobElem.mOwner->EnterLock();
+// 		
+// 		timerJobElem.mTask();
+// 
+// 		timerJobElem.mOwner->LeaveLock();
 
-		timerJobElem.mOwner->LeaveLock();
+		GGrandCentralExecuter->DoDispatch( timerJobElem.mTask );
 
 		mTimerJobQueue.pop();
 	}

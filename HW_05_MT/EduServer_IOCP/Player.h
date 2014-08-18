@@ -4,7 +4,7 @@
 class ClientSession;
 
 
-class Player : public SyncExecutable
+class Player : public SyncExecutable, PooledAllocatable
 {
 public:
 	Player(ClientSession* session);

@@ -17,7 +17,7 @@ OverlappedIOContext::OverlappedIOContext(ClientSession* owner, IOType ioType)
 }
 
 ClientSession::ClientSession() : mBuffer(BUFSIZE), mConnected(0), mRefCount(0)
-, mPlayer(new Player(this)), mBufferLock(LO_LUGGAGE_CLASS)
+, mPlayer(xnew<Player>(this), xdelete<Player>), mBufferLock(LO_LUGGAGE_CLASS)
 {
 	memset(&mClientAddr, 0, sizeof(SOCKADDR_IN));
 	mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);

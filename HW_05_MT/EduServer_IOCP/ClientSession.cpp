@@ -145,6 +145,7 @@ void ClientSession::AcceptCompletion()
 
 	/// 타이머 테스트를 위해 10ms 후에 player 가동 ㄱㄱ
 	DoSyncAfter(10, mPlayer, &Player::Start, 1000);
+	mPlayer->UpdateLastTick();
 }
 
 
@@ -237,7 +238,7 @@ bool ClientSession::PostRecv()
 void ClientSession::RecvCompletion(DWORD transferred)
 {
 	FastSpinlockGuard criticalSection(mBufferLock);
-
+	mPlayer->UpdateLastTick();
 	mBuffer.Commit(transferred);
 }
 

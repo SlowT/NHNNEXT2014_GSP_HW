@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Timer.h"
-#include "ThreadLocal.h"
+// #include "ThreadLocal.h"
 #include "ClientSession.h"
 #include "Player.h"
 #include "PlayerManager.h"
@@ -44,7 +44,10 @@ void Player::OnTick()
 {
 	if (!IsAlive() || !mSession->IsConnected())
 		return;
-
+	if( LTickCount - mLastTick > TIME_ALLOW_WITHOUT_ACT ){
+		mSession->DisconnectRequest( DR_TIMEOUT );
+		return;
+	}
 	
 	/// 랜덤으로 이벤트를 발생시켜보기 (예: 다른 모든 플레이어에게 버프 주기)
 	if (rand() % 100 == 0) ///< 1% 확률

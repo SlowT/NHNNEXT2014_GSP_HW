@@ -36,16 +36,16 @@ void Timer::DoTimerJob()
 
 	while (!mTimerJobQueue.empty())
 	{
- 		const TimerJobElement& timerJobElem = mTimerJobQueue.top(); 
+ 		const TimerJobElement timerJobElem = mTimerJobQueue.top(); 
 		
 		if( LTickCount < timerJobElem.mExecutionTick )
 			break;
 
-		mTimerJobQueue.top().mOwner->EnterLock();
+		timerJobElem.mOwner->EnterLock();
 		
-		mTimerJobQueue.top().mTask();
+		timerJobElem.mTask();
 
-		mTimerJobQueue.top().mOwner->LeaveLock();
+		timerJobElem.mOwner->LeaveLock();
 
 // 		GGrandCentralExecuter->DoDispatch( timerJobElem.mTask );
 

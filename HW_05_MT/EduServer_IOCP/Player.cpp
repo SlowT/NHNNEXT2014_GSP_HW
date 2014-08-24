@@ -36,7 +36,7 @@ void Player::Start(int heartbeat)
 	mPlayerId = GPlayerManager->RegisterPlayer(GetSharedFromThis<Player>());
 
 	/// 생명 불어넣기 ㄱㄱ
-	OnTick();
+	DoSyncAfter(0, GetSharedFromThis<Player>(), &Player::OnTick);
 
 }
 

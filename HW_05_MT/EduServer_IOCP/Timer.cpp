@@ -36,9 +36,9 @@ void Timer::DoTimerJob()
 
 	while (!mTimerJobQueue.empty())
 	{
-// 		const TimerJobElement& timerJobElem = mTimerJobQueue.top(); 
-		// 왜인지 모르겠지만 종종 분명 mTimerJobQueue에는 top값이 있는데 timerJobElem이 널값이 된다.
-		if( LTickCount < mTimerJobQueue.top().mExecutionTick )
+ 		const TimerJobElement& timerJobElem = mTimerJobQueue.top(); 
+		
+		if( LTickCount < timerJobElem.mExecutionTick )
 			break;
 
 		mTimerJobQueue.top().mOwner->EnterLock();

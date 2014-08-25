@@ -34,7 +34,7 @@ DbHelper::~DbHelper()
 bool DbHelper::Initialize(const wchar_t* connInfoStr, int workerThreadCount)
 {
 	//todo: mSqlConnPool, mDbWorkerThreadCount를 워커스레스 수에 맞추어 초기화
-	mDbWorkerThreadCount = GIocpManager->GetIoThreadCount();
+	mDbWorkerThreadCount = GIocpManager->GetIoThreadCount(); ///# workerThreadCount
 	mSqlConnPool = new SQL_CONN[mDbWorkerThreadCount];
 
 	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &mSqlHenv))
@@ -54,8 +54,14 @@ bool DbHelper::Initialize(const wchar_t* connInfoStr, int workerThreadCount)
 	for (int i = 0; i < mDbWorkerThreadCount; ++i)
 	{
 		//todo: SQLAllocHandle을 이용하여 SQL_CONN의 mSqlHdbc 핸들 사용가능하도록 처리
-		SQLAllocHandle( SQL_HANDLE_DBC, mSqlHenv, &mSqlConnPool[i].mSqlHdbc );
+		///# SQLAllocHandle( SQL_HANDLE_DBC, mSqlHenv, &mSqlConnPool[i].mSqlHdbc );
 		
+		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_DBC, mSqlHenv, &mSqlConnPool[i].mSqlHdbc))
+		{
+			printf_s("DbHelper Initialize SQLAllocHandle failed\n");
+			return false;
+		}
+
 		SQLSMALLINT resultLen = 0;
 		
 		//todo: SQLDriverConnect를 이용하여 SQL서버에 연결하고 그 핸들을 SQL_CONN의 mSqlHdbc에 할당
@@ -82,7 +88,13 @@ bool DbHelper::Initialize(const wchar_t* connInfoStr, int workerThreadCount)
 		}
 
 		//todo: SQLAllocHandle를 이용하여 SQL_CONN의 mSqlHstmt 핸들 사용가능하도록 처리
-		SQLAllocHandle( SQL_HANDLE_STMT, mSqlConnPool[i].mSqlHdbc, &mSqlConnPool[i].mSqlHstmt );
+		///# SQLAllocHandle( SQL_HANDLE_STMT, mSqlConnPool[i].mSqlHdbc, &mSqlConnPool[i].mSqlHstmt );
+
+		if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_STMT, mSqlConnPool[i].mSqlHdbc, &mSqlConnPool[i].mSqlHstmt))
+		{
+			printf_s("DbHelper Initialize SQLAllocHandle SQL_HANDLE_STMT failed\n");
+			return false;
+		}
 	}
 
 	return true;
@@ -142,8 +154,11 @@ bool DbHelper::FetchRow()
 bool DbHelper::BindParamInt(int* param)
 {
 	//todo: int형 파라미터 바인딩
-	SQLRETURN ret = SQLBindParameter( mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT, 
-		SQL_C_LONG, SQL_INTEGER, 1, 0, param, 0, NULL ); // = SQLBindParameter(...);
+	//SQLRETURN ret = SQLBindParameter( mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT, 
+	//	SQL_C_LONG, SQL_INTEGER, 1, 0, param, 0, NULL ); // = SQLBindParameter(...);
+
+	SQLRETURN ret = SQLBindParameter(mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
+		SQL_C_LONG, SQL_INTEGER, 10, 0, param, 0, NULL);
 
 	if (SQL_SUCCESS != ret && SQL_SUCCESS_WITH_INFO != ret)
 	{
@@ -171,8 +186,11 @@ bool DbHelper::BindParamFloat(float* param)
 bool DbHelper::BindParamBool(bool* param)
 {
 	//todo: bool형 파라미터 바인딩
-	SQLRETURN ret = SQLBindParameter( mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
-		SQL_C_BIT, SQL_TINYINT, 0, 0, param, 0, NULL ); // = SQLBindParameter(...);
+	//SQLRETURN ret = SQLBindParameter( mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
+	//	SQL_C_BIT, SQL_TINYINT, 0, 0, param, 0, NULL ); // = SQLBindParameter(...);
+
+	SQLRETURN ret = SQLBindParameter(mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
+		SQL_C_TINYINT, SQL_TINYINT, 3, 0, param, 0, NULL);
 
 	if (SQL_SUCCESS != ret && SQL_SUCCESS_WITH_INFO != ret)
 	{
@@ -187,8 +205,11 @@ bool DbHelper::BindParamText(const wchar_t* text)
 {
 
 	//todo: 유니코드 문자열 바인딩
-	SQLRETURN ret = SQLBindParameter( mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
-		SQL_C_WCHAR, SQL_WVARCHAR, SQL_DESC_LENGTH, wcslen( text ), const_cast<SQLWCHAR*>(text), 0, NULL ); // = SQLBindParameter(...);
+	//SQLRETURN ret = SQLBindParameter( mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
+	//	SQL_C_WCHAR, SQL_WVARCHAR, SQL_DESC_LENGTH, wcslen( text ), const_cast<SQLWCHAR*>(text), 0, NULL ); // = SQLBindParameter(...);
+
+	SQLRETURN ret = SQLBindParameter(mCurrentSqlHstmt, mCurrentBindParam++, SQL_PARAM_INPUT,
+		SQL_C_WCHAR, SQL_WVARCHAR, wcslen(text), 0, (SQLPOINTER)text, 0, NULL);
 
 	if (SQL_SUCCESS != ret && SQL_SUCCESS_WITH_INFO != ret)
 	{
@@ -236,7 +257,9 @@ void DbHelper::BindResultColumnText(wchar_t* text, size_t count)
 {
 	SQLLEN len = 0;
 	//todo: wchar_t*형 결과 컬럼 바인딩
-	SQLRETURN ret = SQLBindCol( mCurrentSqlHstmt, mCurrentResultCol++, SQL_C_WCHAR, text, count, &len );
+	///# 주의 SQLRETURN ret = SQLBindCol( mCurrentSqlHstmt, mCurrentResultCol++, SQL_C_WCHAR, text, count, &len );
+	SQLRETURN ret = SQLBindCol(mCurrentSqlHstmt, mCurrentResultCol++, SQL_C_WCHAR, text, count * 2, &len);
+
 
 	if (SQL_SUCCESS != ret && SQL_SUCCESS_WITH_INFO != ret)
 	{

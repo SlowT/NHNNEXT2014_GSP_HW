@@ -2,7 +2,6 @@
 #include "Exception.h"
 #include "ThreadLocal.h"
 #include "DBHelper.h"
-#include "IocpManager.h"
 
 //todo: DbHelper의 static 멤버변수 초기화
 SQLHENV DbHelper::mSqlHenv = SQL_NULL_HANDLE;
@@ -34,7 +33,7 @@ DbHelper::~DbHelper()
 bool DbHelper::Initialize(const wchar_t* connInfoStr, int workerThreadCount)
 {
 	//todo: mSqlConnPool, mDbWorkerThreadCount를 워커스레스 수에 맞추어 초기화
-	mDbWorkerThreadCount = GIocpManager->GetIoThreadCount(); ///# workerThreadCount
+	mDbWorkerThreadCount = workerThreadCount; ///# workerThreadCount
 	mSqlConnPool = new SQL_CONN[mDbWorkerThreadCount];
 
 	if (SQL_SUCCESS != SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &mSqlHenv))

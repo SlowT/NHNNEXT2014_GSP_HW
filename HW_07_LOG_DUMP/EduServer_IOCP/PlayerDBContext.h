@@ -7,12 +7,40 @@
 //{
 //	 ... ...
 //};
+struct CreatePlayerDataContext : public DatabaseJobContext, public ObjectPool < CreatePlayerDataContext >
+{
+	CreatePlayerDataContext( ClientSession* owner ) : DatabaseJobContext( owner )
+	{
+		memset( mPlayerName, 0, sizeof( mPlayerName ) );
+	}
+
+	virtual bool OnSQLExecute();
+	virtual void OnSuccess();
+	virtual void OnFail();
+
+	void SetNewName( const wchar_t* name );
+
+	int		mPlayerId = -1;
+	wchar_t	mPlayerName[MAX_NAME_LEN];
+};
 
 //todo: Player 삭제 작업 DB context 만들기
 
 //struct DeletePlayerDataContext
 //{
 //};
+struct DeletePlayerDataContext : public DatabaseJobContext, public ObjectPool < DeletePlayerDataContext >
+{
+	DeletePlayerDataContext( ClientSession* owner, int pid ) : DatabaseJobContext( owner )
+		, mPlayerId( pid )
+	{}
+
+	virtual bool OnSQLExecute();
+	virtual void OnSuccess();
+	virtual void OnFail();
+
+	int		mPlayerId = -1;
+};
 
 
 /// player load 작업
@@ -47,7 +75,7 @@ struct LoadPlayerDataContext : public DatabaseJobContext, public ObjectPool<Load
 struct UpdatePlayerPositionContext : public DatabaseJobContext, public ObjectPool<UpdatePlayerPositionContext>
 {
 	UpdatePlayerPositionContext(ClientSession* owner, int pid) : DatabaseJobContext(owner)
-	, mPlayerId(pid), mPosX(0), mPosY(0), mPosZ(0)
+		, mPlayerId( pid ), mPosX( 0 ), mPosY( 0 ), mPosZ( 0 )
 	{
 	}
 

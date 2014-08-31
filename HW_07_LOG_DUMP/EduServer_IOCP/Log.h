@@ -39,6 +39,8 @@ private:
 	if (LThreadType != THREAD_MAIN)	\
 	{	\
 		/*todo: 스레드로컬에 함수 호출(__FUNCSIG__) 기록남기기*/ \
+		GThreadCallHistory[LWorkerThreadId]->Append(__FUNCSIG__);	\
+		TRACE_PERF;	\
 	}	
 	
 
@@ -55,6 +57,8 @@ public:
 	inline void Append(const char* funcsig, int64_t elapsed)
 	{
 		//todo: mElapsedFuncSig, mElapsedTime에 정보(funcsig, elapsed) 남기기
+		mElapsedFuncSig[mCounter % MAX_ELAPSED_RECORD] = funcsig;
+		mElapsedTime[mCounter++ % MAX_ELAPSED_RECORD] = elapsed;
 	}
 
 	void DumpOut(std::ostream& ost = std::cout);
@@ -88,6 +92,7 @@ public:
 		if (LThreadType != THREAD_MAIN)
 		{
 			//todo: LThreadCallElapsedRecord에 함수 수행 시간 남기기
+			GThreadCallElapsedRecord[LWorkerThreadId]->Append( mFuncSig, GetTickCount64() - mStartTick );
 		}
 	}
 
@@ -121,6 +126,13 @@ namespace LoggerUtil
 		__int64 index = _InterlockedIncrement64(&gCurrentLogIndex) - 1;
 		
 		//todo: gLogEvents에 LogEvent정보 남기기
+		gLogEvents[index % MAX_LOG_SIZE].mThreadId = LWorkerThreadId;
+		gLogEvents[index % MAX_LOG_SIZE].mAdditionalInfo = info;
+		if( nullptr != gLogEvents[index % MAX_LOG_SIZE].mMessage ){
+			delete[] gLogEvents[index % MAX_LOG_SIZE].mMessage;
+			gLogEvents[index % MAX_LOG_SIZE].mMessage = nullptr;
+		}
+		gLogEvents[index % MAX_LOG_SIZE].mMessage = msg;////////todo:일단 혹시나 되나해서...
 	}
 
 	void EventLogDumpOut(std::ostream& ost = std::cout);

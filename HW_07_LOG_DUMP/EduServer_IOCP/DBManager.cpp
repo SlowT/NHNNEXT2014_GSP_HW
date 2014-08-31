@@ -81,8 +81,12 @@ unsigned int WINAPI DBManager::DbWorkerThread(LPVOID lpParam)
 	return GDatabaseManager->mDbWorkerThread[LWorkerThreadId]->Run();
 }
 
-void DBManager::PostDatabsaseRequest(DatabaseJobContext* dbContext)
+void DBManager::PostDatabsaseRequest( DatabaseJobContext* dbContext )
 {
 	//todo: PQCS를 이용하여 dbContext를 mDbCompletionPort에 보내기
-
+	if( FALSE == PostQueuedCompletionStatus( mDbCompletionPort, 0, (ULONG_PTR)CK_DB_REQUEST, (LPOVERLAPPED)dbContext ) )
+	{
+		printf_s( "DBManager::PostDatabsaseRequest PostQueuedCompletionStatus Error: %d\n", GetLastError() );
+		CRASH_ASSERT( false );
+	}
 }

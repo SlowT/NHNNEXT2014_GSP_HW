@@ -149,7 +149,7 @@ void ClientSession::AcceptCompletion()
 	//TEST: 요놈의 위치는 원래 C_LOGIN 핸들링 할 때 해야하는거지만 지금은 접속 완료 시점에서 테스트 ㄱㄱ
 
 	//todo: 플레이어 id는 여러분의 플레이어 테이블 상황에 맞게 적절히 고쳐서 로딩하도록 
-	static int id = 101;
+	static int id = 100;
  	mPlayer.RequestLoad(id++);
 }
 

@@ -7,8 +7,74 @@
 
 
 //todo: CreatePlayerDataContext 구현
+bool CreatePlayerDataContext::OnSQLExecute()
+{
+	DBHelper dbHelper;
+
+	dbHelper.BindParamText( mPlayerName );
+
+	dbHelper.BindResultColumnInt( &mPlayerId );
+
+	if( dbHelper.Execute( SQL_CreatePlayer ) )
+	{
+		if( dbHelper.FetchRow() )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void CreatePlayerDataContext::OnSuccess()
+{
+	EVENT_LOG( "CreatePlayerDataContext success", mPlayerId );
+	///for test
+	mSessionObject->mPlayer.RequestLoad( mPlayerId );
+}
+
+void CreatePlayerDataContext::OnFail()
+{
+	EVENT_LOG( "CreatePlayerDataContext fail", mPlayerId );
+}
+
+void CreatePlayerDataContext::SetNewName( const wchar_t* name )
+{
+	wcscpy_s( mPlayerName, name );
+}
+
+
 
 //todo: DeletePlayerDataContext 구현
+bool DeletePlayerDataContext::OnSQLExecute()
+{
+	DBHelper dbHelper;
+	int result = 0;
+
+	dbHelper.BindParamInt( &mPlayerId );
+
+	dbHelper.BindResultColumnInt( &result );
+
+	if( dbHelper.Execute( SQL_CreatePlayer ) )
+	{
+		if( dbHelper.FetchRow() )
+		{
+			return result != 0;
+		}
+	}
+
+	return false;
+}
+
+void DeletePlayerDataContext::OnSuccess()
+{
+	EVENT_LOG( "DeletePlayerDataContext success", mPlayerId );
+}
+
+void DeletePlayerDataContext::OnFail()
+{
+	EVENT_LOG( "DeletePlayerDataContext fail", mPlayerId );
+}
 
 
 
@@ -39,12 +105,19 @@ bool LoadPlayerDataContext::OnSQLExecute()
 void LoadPlayerDataContext::OnSuccess()
 {
 	//todo: 플레이어 로드 성공시 처리하기
-	
+	mSessionObject->mPlayer.ResponseLoad( mPlayerId, mPosX, mPosY, mPosZ, mIsValid, mPlayerName, mComment );
 }
 
 void LoadPlayerDataContext::OnFail()
 {
 	EVENT_LOG("LoadPlayerDataContext fail", mPlayerId);
+
+	///for test
+	wchar_t tmp[21] = { 0, };
+	wchar_t tName[32] = L"TestPlayer_";
+	_itow_s( (int)mSessionObject, tmp, 10 );
+	wcscat_s( tName, tmp );
+	mSessionObject->mPlayer.TestCreatePlayerData( tName );
 }
 
 

@@ -36,7 +36,12 @@ void MakeDump(EXCEPTION_POINTERS* e)
 	exceptionInfo.ClientPointers = FALSE;
 
 	//todo: MiniDumpWriteDump를 사용하여 hFile에 덤프 기록
+	MINIDUMP_TYPE mdt = (MINIDUMP_TYPE)(MiniDumpWithPrivateReadWriteMemory |
+		MiniDumpWithDataSegs | MiniDumpWithHandleData | MiniDumpWithFullMemoryInfo |
+		MiniDumpWithThreadInfo | MiniDumpWithUnloadedModules);
 
+	MiniDumpWriteDump( GetCurrentProcess(), GetCurrentProcessId(),
+		hFile, mdt, (e != 0) ? &exceptionInfo : 0, 0, NULL );
 	
 	if (hFile)
 	{
@@ -67,8 +72,12 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS* exceptionInfo)
 			do
 			{
 				//todo: 내 프로세스 내의 스레드중 나 자신 스레드만 빼고 멈추게..
-				
-
+				if( te32.th32ThreadID != myThreadId && te32.th32OwnerProcessID == myProcessId ){
+					HANDLE tThread = OpenThread( THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID );
+					DWORD tExitCode;
+					GetExitCodeThread( tThread, &tExitCode );
+					TerminateThread( tThread, tExitCode );
+				}
 			} while (Thread32Next(hThreadSnap, &te32));
 
 		}
@@ -103,7 +112,9 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS* exceptionInfo)
 	historyOut << "========== Exception Call Stack ==========" << std::endl << std::endl;
 
 	//todo: StackWalker를 사용하여 historyOut에 현재 스레드의 콜스택 정보 남기기
-
+	StackWalker stackWalker;
+	stackWalker.SetOutputStream( &historyOut );
+	stackWalker.ShowCallstack();
 	
 	/// 이벤트 로그 남기고
 	LoggerUtil::EventLogDumpOut(historyOut);

@@ -77,7 +77,7 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS* exceptionInfo)
 					DWORD tExitCode;
 					//GetExitCodeThread( tThread, &tExitCode );
 					//TerminateThread( tThread, tExitCode );
-					///# 빠져나가면 안되지 아래처럼 멈춰야지 ;;
+					///# 빠져나가면 안되지 아래처럼 멈춰야지 ;; ///## 어쩐지...
 					SuspendThread(tThread);
 				}
 			} while (Thread32Next(hThreadSnap, &te32));

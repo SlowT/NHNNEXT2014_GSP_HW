@@ -92,7 +92,7 @@ public:
 		if (LThreadType != THREAD_MAIN)
 		{
 			//todo: LThreadCallElapsedRecord에 함수 수행 시간 남기기
-			GThreadCallElapsedRecord[LWorkerThreadId]->Append( mFuncSig, GetTickCount64() - mStartTick );
+			LThreadCallElapsedRecord->Append( mFuncSig, GetTickCount64() - mStartTick );
 			///# LThreadCallElapsedRecord
 		}
 	}
@@ -135,7 +135,7 @@ namespace LoggerUtil
 			gLogEvents[index % MAX_LOG_SIZE].mMessage = nullptr;
 		}
 		gLogEvents[index % MAX_LOG_SIZE].mMessage = msg;////////todo:일단 혹시나 되나해서...
-		*/
+		*/ ///## 앗;; 이거 고친다는거 깜박하고 그냥 커밋을... new로 만들어서 copy헤야할지 그냥 포인터만 넘길지 고민하다 이도저도 아닌채 방치된 코드...
 
 		LogEvent& event = gLogEvents[index & (MAX_LOG_SIZE - 1)];
 		event.mThreadId = LWorkerThreadId;

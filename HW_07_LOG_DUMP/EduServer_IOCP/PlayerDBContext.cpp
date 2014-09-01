@@ -10,7 +10,7 @@
 bool CreatePlayerDataContext::OnSQLExecute()
 {
 	DBHelper dbHelper;
-	/*
+	
 	dbHelper.BindParamText( mPlayerName );
 
 	dbHelper.BindResultColumnInt( &mPlayerId );
@@ -22,8 +22,8 @@ bool CreatePlayerDataContext::OnSQLExecute()
 			return true;
 		}
 	}
-	*/
-
+	
+	/*
 	int result = 0;
 
 	dbHelper.BindParamText(mPlayerName);
@@ -37,7 +37,7 @@ bool CreatePlayerDataContext::OnSQLExecute()
 			return result != 0;
 		}
 	}
-
+	*/ ///## spCreatePlayer는 @@ROWCOUNT가 아니라 @@IDENTITY를 리턴하게 되있던데...
 
 	return false;
 }
@@ -71,7 +71,7 @@ bool DeletePlayerDataContext::OnSQLExecute()
 
 	dbHelper.BindResultColumnInt( &result );
 
-	if( dbHelper.Execute( SQL_CreatePlayer ) ) ///# 제대로 테스트 안해봤구만...
+	if( dbHelper.Execute( SQL_DeletePlayer ) ) ///# 제대로 테스트 안해봤구만... ///# 으악;; 다른문젠줄...
 	{
 		if( dbHelper.FetchRow() )
 		{

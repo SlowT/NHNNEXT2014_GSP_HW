@@ -10,7 +10,7 @@
 bool CreatePlayerDataContext::OnSQLExecute()
 {
 	DBHelper dbHelper;
-	
+	/*
 	dbHelper.BindParamText( mPlayerName );
 
 	dbHelper.BindResultColumnInt( &mPlayerId );
@@ -22,8 +22,8 @@ bool CreatePlayerDataContext::OnSQLExecute()
 			return true;
 		}
 	}
+	*/
 	
-	/*
 	int result = 0;
 
 	dbHelper.BindParamText(mPlayerName);
@@ -36,8 +36,7 @@ bool CreatePlayerDataContext::OnSQLExecute()
 			/// 적용받은 행이 하나도 없다면, 실패라고 간주하자
 			return result != 0;
 		}
-	}
-	*/ ///## spCreatePlayer는 @@ROWCOUNT가 아니라 @@IDENTITY를 리턴하게 되있던데...
+	}	///## spCreatePlayer는 @@ROWCOUNT가 아니라 @@IDENTITY를 리턴하게 되있던데... ///## 그래도 이게 원칙이라고 한다...
 
 	return false;
 }

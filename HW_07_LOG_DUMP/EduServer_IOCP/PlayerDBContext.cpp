@@ -10,7 +10,7 @@
 bool CreatePlayerDataContext::OnSQLExecute()
 {
 	DBHelper dbHelper;
-
+	/*
 	dbHelper.BindParamText( mPlayerName );
 
 	dbHelper.BindResultColumnInt( &mPlayerId );
@@ -22,6 +22,22 @@ bool CreatePlayerDataContext::OnSQLExecute()
 			return true;
 		}
 	}
+	*/
+
+	int result = 0;
+
+	dbHelper.BindParamText(mPlayerName);
+	dbHelper.BindResultColumnInt(&result);
+
+	if (dbHelper.Execute(SQL_CreatePlayer))
+	{
+		if (dbHelper.FetchRow())
+		{
+			/// 적용받은 행이 하나도 없다면, 실패라고 간주하자
+			return result != 0;
+		}
+	}
+
 
 	return false;
 }
@@ -55,7 +71,7 @@ bool DeletePlayerDataContext::OnSQLExecute()
 
 	dbHelper.BindResultColumnInt( &result );
 
-	if( dbHelper.Execute( SQL_CreatePlayer ) )
+	if( dbHelper.Execute( SQL_CreatePlayer ) ) ///# 제대로 테스트 안해봤구만...
 	{
 		if( dbHelper.FetchRow() )
 		{

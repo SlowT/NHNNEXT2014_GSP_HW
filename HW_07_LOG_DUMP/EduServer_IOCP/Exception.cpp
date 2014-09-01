@@ -75,8 +75,10 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS* exceptionInfo)
 				if( te32.th32ThreadID != myThreadId && te32.th32OwnerProcessID == myProcessId ){
 					HANDLE tThread = OpenThread( THREAD_ALL_ACCESS, FALSE, te32.th32ThreadID );
 					DWORD tExitCode;
-					GetExitCodeThread( tThread, &tExitCode );
-					TerminateThread( tThread, tExitCode );
+					//GetExitCodeThread( tThread, &tExitCode );
+					//TerminateThread( tThread, tExitCode );
+					///# 빠져나가면 안되지 아래처럼 멈춰야지 ;;
+					SuspendThread(tThread);
 				}
 			} while (Thread32Next(hThreadSnap, &te32));
 

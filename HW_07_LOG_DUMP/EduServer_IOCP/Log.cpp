@@ -12,7 +12,7 @@ void ThreadCallHistory::DumpOut(std::ostream& ost)
 
 	for( int i = 1; i <= count; ++i )
 	{
-		ost << "  FUNC:" << mHistory[(mCounter - i) % MAX_HISTORY] << std::endl;
+		ost << "  FUNC:" << mHistory[(mCounter - i) & (MAX_HISTORY - 1)] << std::endl;
 	}
 	ost << "===== End of Recent Call History" << std::endl << std::endl;
 }
@@ -26,8 +26,8 @@ void ThreadCallElapsedRecord::DumpOut(std::ostream& ost)
 
 	for (int i = 1; i <= count; ++i)
 	{
-		ost << "  FUNC:" << mElapsedFuncSig[(mCounter - i) % MAX_ELAPSED_RECORD] 
-			<< "  ELAPSED: " << mElapsedTime[(mCounter - i) % MAX_ELAPSED_RECORD] << std::endl;
+		ost << "  FUNC:" << mElapsedFuncSig[(mCounter - i) & (MAX_ELAPSED_RECORD - 1)] 
+			<< "  ELAPSED: " << mElapsedTime[(mCounter - i) & (MAX_ELAPSED_RECORD - 1)] << std::endl;
 	}
 	ost << "===== End of Recent Call Performance" << std::endl << std::endl;
 
@@ -48,9 +48,9 @@ namespace LoggerUtil
 
 		for( int i = 1; i <= count; ++i )
 		{
-			ost << "  ThreadId:" << gLogEvents[(gCurrentLogIndex - i) % MAX_LOG_SIZE].mThreadId
-				<< "  AdditionalInfo:" << gLogEvents[(gCurrentLogIndex - i) % MAX_LOG_SIZE].mAdditionalInfo
-				<< "  Message:" << gLogEvents[(gCurrentLogIndex - i) % MAX_LOG_SIZE].mMessage << std::endl;
+			ost << "  ThreadId:" << gLogEvents[(gCurrentLogIndex - i) & (MAX_LOG_SIZE - 1)].mThreadId
+				<< "  AdditionalInfo:" << gLogEvents[(gCurrentLogIndex - i) & (MAX_LOG_SIZE - 1)].mAdditionalInfo
+				<< "  Message:" << gLogEvents[(gCurrentLogIndex - i) & (MAX_LOG_SIZE - 1)].mMessage << std::endl;
 		}
 		ost << "===== End of Recent Events" << std::endl << std::endl;
 		

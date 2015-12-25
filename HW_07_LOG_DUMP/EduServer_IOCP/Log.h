@@ -14,7 +14,7 @@ public:
 
 	inline void Append(const char* funsig)
 	{
-		mHistory[mCounter++ % MAX_HISTORY] = funsig;
+		mHistory[mCounter++ & (MAX_HISTORY - 1)] = funsig;
 	}
 
 	void DumpOut(std::ostream& ost = std::cout);
@@ -57,8 +57,8 @@ public:
 	inline void Append(const char* funcsig, int64_t elapsed)
 	{
 		//todo: mElapsedFuncSig, mElapsedTime에 정보(funcsig, elapsed) 남기기
-		mElapsedFuncSig[mCounter % MAX_ELAPSED_RECORD] = funcsig;
-		mElapsedTime[mCounter++ % MAX_ELAPSED_RECORD] = elapsed;
+		mElapsedFuncSig[mCounter & (MAX_ELAPSED_RECORD - 1)] = funcsig;
+		mElapsedTime[mCounter++ & (MAX_ELAPSED_RECORD - 1)] = elapsed;
 	}
 
 	void DumpOut(std::ostream& ost = std::cout);
@@ -135,9 +135,9 @@ namespace LoggerUtil
 			gLogEvents[index % MAX_LOG_SIZE].mMessage = nullptr;
 		}
 		gLogEvents[index % MAX_LOG_SIZE].mMessage = msg;////////todo:일단 혹시나 되나해서...
-		*/ ///## 앗;; 이거 고친다는거 깜박하고 그냥 커밋을... new로 만들어서 copy헤야할지 그냥 포인터만 넘길지 고민하다 이도저도 아닌채 방치된 코드...
+		*/ ///## 앗;; 이거 고친다는거 깜박하고 그냥 커밋을... new로 만들어서 copy헤야할지 그냥 포인터만 넘길지 고민하다 이도저도 아닌채 방치됐던 코드...
 
-		LogEvent& event = gLogEvents[index & (MAX_LOG_SIZE - 1)];
+		LogEvent& event = gLogEvents[index & (MAX_LOG_SIZE - 1)]; ///## %연산은 느리니 2의배수일 경우 이렇게 가능하다고 한다.
 		event.mThreadId = LWorkerThreadId;
 		event.mMessage = msg;
 		event.mAdditionalInfo = info;
